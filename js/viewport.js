@@ -8,6 +8,10 @@ class Viewport {
     this.#addEventListeners();
   }
 
+  getMousePoint(evt) {
+    return new Point(evt.offsetX * this.zoom, evt.offsetY * this.zoom);
+  }
+
   #addEventListeners() {
     // handla mous wheel event
     this.canvas.addEventListener(
