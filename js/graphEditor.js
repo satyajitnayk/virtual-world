@@ -14,24 +14,46 @@ class GraphEditor {
 
   #addEventListeners() {
     this.canvas.addEventListener('mousedown', (evt) => {
-      // get mouse pointer location
-      const mousePoint = new Point(evt.offsetX, evt.offsetY);
-      // check if nearest point exists near mousePoint
-      // add onlyselect it but do not add new point near it
-      this.hovered = getNearestPoint(mousePoint, this.graph.points, 10);
-      if (this.hovered) {
-        this.selected = this.hovered;
-        return;
+      if (evt.button == 2) {
+        // right click
+        if (this.hovered) {
+          this.#removePoint(this.hovered);
+        }
       }
-      this.graph.addPoint(mousePoint);
-      this.selected = mousePoint;
+      if (evt.button == 0) {
+        // left click
+        // get mouse pointer location
+        const mousePoint = new Point(evt.offsetX, evt.offsetY);
+
+        if (this.hovered) {
+          this.selected = this.hovered;
+          return;
+        }
+        this.graph.addPoint(mousePoint);
+        this.selected = mousePoint;
+        this.hovered = mousePoint;
+      }
     });
 
     this.canvas.addEventListener('mousemove', (evt) => {
       // get mouse pointer location
       const mousePoint = new Point(evt.offsetX, evt.offsetY);
+      // check if nearest point exists near mousePoint
+      // add onlyselect it but do not add new point near it
       this.hovered = getNearestPoint(mousePoint, this.graph.points, 10);
     });
+    // to prevent diaplying menu on clicking right btn in mouse
+    this.canvas.addEventListener('contextmenu', (evt) => evt.preventDefault());
+  }
+
+  #removePoint(point) {
+    this.graph.removePoint(point);
+    this.hovered = null;
+    // check if selected & removed point are same
+    // else keep slected point as it is
+    if (this.selected == point) {
+      this.selected = null;
+    }
   }
 
   display() {
