@@ -16,47 +16,53 @@ class GraphEditor {
 
   #addEventListeners() {
     // handle mouse click event
-    this.canvas.addEventListener('mousedown', (evt) => {
-      // right click
-      if (evt.button == 2) {
-        if (this.hovered) {
-          this.#removePoint(this.hovered);
-        } else {
-          this.selected = null;
-        }
-      }
-      // left click
-      if (evt.button == 0) {
-        if (this.hovered) {
-          // hovered to exisitng point
-          this.#selectPoint(this.hovered);
-          this.dragging = true;
-          return;
-        }
-        this.graph.addPoint(this.mousePoint);
-        // check if any point already slelected,
-        // then draw line b/w it & current point
-        this.#selectPoint(this.mousePoint);
-        this.hovered = this.mousePoint;
-      }
-    });
-
+    // bind the 'handleMouseDown' method to the current context ('this').
+    // This allows 'handleMouseDown' to access properties and methods of the current object.
+    this.canvas.addEventListener('mousedown', this.#handleMouseDown.bind(this));
     // handle mouse movements
-    this.canvas.addEventListener('mousemove', (evt) => {
-      // get mouse pointer location
-      this.mousePoint = new Point(evt.offsetX, evt.offsetY);
-      // check if nearest point exists near mousePoint
-      // add onlyselect it but do not add new point near it
-      this.hovered = getNearestPoint(this.mousePoint, this.graph.points, 10);
-      if (this.dragging) {
-        this.selected.x = this.mousePoint.x;
-        this.selected.y = this.mousePoint.y;
-      }
-    });
+    this.canvas.addEventListener('mousemove', this.#handleMouseMove.bind(this));
     // to prevent diaplying menu on clicking right btn in mouse
     this.canvas.addEventListener('contextmenu', (evt) => evt.preventDefault());
     // handle releasing mouse button
     this.canvas.addEventListener('mouseup', () => (this.dragging = false));
+  }
+
+  #handleMouseDown(evt) {
+    // right click
+    if (evt.button == 2) {
+      if (this.selected) {
+        this.selected = null;
+      } else if (this.hovered) {
+        // right click while hovering deselect hovered point
+        this.#removePoint(this.hovered);
+      }
+    }
+    // left click
+    if (evt.button == 0) {
+      if (this.hovered) {
+        // hovered to exisitng point
+        this.#selectPoint(this.hovered);
+        this.dragging = true;
+        return;
+      }
+      this.graph.addPoint(this.mousePoint);
+      // check if any point already slelected,
+      // then draw line b/w it & current point
+      this.#selectPoint(this.mousePoint);
+      this.hovered = this.mousePoint;
+    }
+  }
+
+  #handleMouseMove(evt) {
+    // get mouse pointer location
+    this.mousePoint = new Point(evt.offsetX, evt.offsetY);
+    // check if nearest point exists near mousePoint
+    // add onlyselect it but do not add new point near it
+    this.hovered = getNearestPoint(this.mousePoint, this.graph.points, 10);
+    if (this.dragging) {
+      this.selected.x = this.mousePoint.x;
+      this.selected.y = this.mousePoint.y;
+    }
   }
 
   #selectPoint(point) {
