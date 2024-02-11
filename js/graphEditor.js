@@ -8,6 +8,7 @@ class GraphEditor {
     // selected point
     this.selected = null;
     this.hovered = null;
+    this.dragging = false;
 
     this.#addEventListeners();
   }
@@ -27,6 +28,7 @@ class GraphEditor {
 
         if (this.hovered) {
           this.selected = this.hovered;
+          this.dragging = true;
           return;
         }
         this.graph.addPoint(mousePoint);
@@ -35,15 +37,22 @@ class GraphEditor {
       }
     });
 
+    // handle mouse movements
     this.canvas.addEventListener('mousemove', (evt) => {
       // get mouse pointer location
       const mousePoint = new Point(evt.offsetX, evt.offsetY);
       // check if nearest point exists near mousePoint
       // add onlyselect it but do not add new point near it
       this.hovered = getNearestPoint(mousePoint, this.graph.points, 10);
+      if (this.dragging) {
+        this.selected.x = mousePoint.x;
+        this.selected.y = mousePoint.y;
+      }
     });
     // to prevent diaplying menu on clicking right btn in mouse
     this.canvas.addEventListener('contextmenu', (evt) => evt.preventDefault());
+    // handle releasing mouse button
+    this.canvas.addEventListener('mouseup', () => (this.dragging = false));
   }
 
   #removePoint(point) {
