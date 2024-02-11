@@ -12,81 +12,13 @@
   <h1>World Editor</h1>
   <canvas id="myCanvas"></canvas>
   <div id="controls">
-    <button onclick="addRandomPoint()">Add Point</button>
-    <button onclick="addRandomSegment()">Add Segment</button>
-    <button onclick="RemoveRandomSegment()">Remove Segment</button>
-    <button onclick="RemoveRandomPoint()">Remove Point</button>
-    <button onclick="RemoveAll()">Remove All</button>
+
   </div>
 
   <script src="js/math/graph.js"></script>
   <script src="js/primitives/point.js"></script>
   <script src="js/primitives/segment.js"></script>
   <script>
-
-    function RemoveAll() {
-      graph.dispose();
-      // refresh the canvas
-      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-      // draw again
-      graph.draw(ctx);
-    }
-
-    function RemoveRandomPoint() {
-      if (graph.points.length === 0) {
-        console.log("no points");
-        return;
-      }
-      const index = Math.floor(Math.random() * graph.points.length);
-      graph.removePoint(graph.points[index]);
-
-      // refresh the canvas
-      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-      // draw again
-      graph.draw(ctx);
-    }
-
-    function RemoveRandomSegment() {
-      if (graph.segments.length === 0) {
-        console.log("no segments");
-        return;
-      }
-      const index = Math.floor(Math.random() * graph.segments.length);
-      graph.removeSegment(graph.segments[index]);
-
-      // refresh the canvas
-      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-      // draw again
-      graph.draw(ctx);
-    }
-
-    function addRandomSegment() {
-      const index1 = Math.floor(Math.random() * graph.points.length)
-      const index2 = Math.floor(Math.random() * graph.points.length)
-      const success = graph.tryAddSegment(
-        new Segment(graph.points[index1], graph.points[index2])
-      );
-
-      // refresh the canvas
-      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-      // draw again
-      graph.draw(ctx);
-    }
-
-
-    function addRandomPoint() {
-      const success = graph.tryAddPoint(
-        new Point(
-          Math.random() * myCanvas.width,
-          Math.random() * myCanvas.height,
-        )
-      )
-
-      // refresh the canvas
-      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-      // draw again
-      graph.draw(ctx);
-    }
 
 
     myCanvas.width = 600;
