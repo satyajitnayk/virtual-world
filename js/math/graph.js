@@ -43,7 +43,7 @@ class Graph {
 
   tryAddSegment(segment) {
     // check segment not exists & points not equal in the segment
-    if (!this.containsSegment(segment) && !segment.p1.equals(p2)) {
+    if (!this.containsSegment(segment) && !segment.p1.equals(segment.p2)) {
       this.addSegment(segment);
       return true;
     }
