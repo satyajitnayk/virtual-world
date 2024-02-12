@@ -87,6 +87,13 @@ class GraphEditor {
     }
   }
 
+  dispose() {
+    this.graph.dispose();
+    // reset hovered & selected
+    this.selected = null;
+    this.hovered = null;
+  }
+
   display() {
     this.graph.draw(this.ctx);
     if (this.hovered) {
