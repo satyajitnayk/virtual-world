@@ -56,7 +56,7 @@ class GraphEditor {
 
   #handleMouseMove(evt) {
     // get mouse pointer location
-    this.mousePoint = this.viewport.getMousePoint(evt);
+    this.mousePoint = this.viewport.getMousePoint(evt, true);
     // check if nearest point exists near mousePoint
     // add onlyselect it but do not add new point near it
     this.hovered = getNearestPoint(

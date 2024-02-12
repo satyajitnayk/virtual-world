@@ -46,13 +46,8 @@
     animate();
 
     function animate() {
-      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-      // save & restore called to prevent continuous zoom as scale called on each frame
-      ctx.save();
-      // zoom out
-      ctx.scale(1 / viewport.zoom, 1 / viewport.zoom);
+      viewport.reset()
       graphEditor.display();
-      ctx.restore();
       // Browser will call animate 60 time/second
       requestAnimationFrame(animate);
     }
