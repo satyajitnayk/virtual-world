@@ -43,7 +43,7 @@
     function animate() {
       viewport.reset()
       graphEditor.display();
-      new Envelope(graph.segments[0], 80).draw(ctx);
+      new Envelope(graph.segments[0], 200, 20).draw(ctx);
       // Browser will call animate 60 time/second
       requestAnimationFrame(animate);
     }
