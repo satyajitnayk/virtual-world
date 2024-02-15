@@ -16,6 +16,8 @@ class World {
         new Envelope(segment, this.roadWidth, this.roundness)
       );
     }
+
+    Polygon.multiBreak(this.envelopes.map((e) => e.polygon));
   }
 
   draw(ctx) {
