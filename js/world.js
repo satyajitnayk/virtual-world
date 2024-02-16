@@ -40,7 +40,7 @@ class World {
   #generateTrees() {
     const points = [
       ...this.roadBorders.map((s) => [s.p1, s.p2]).flat(),
-      ...this.buildings.map((b) => b.points).flat(),
+      ...this.buildings.map((b) => b.base.points).flat(),
     ];
     const left = Math.min(...points.map((p) => p.x));
     const right = Math.max(...points.map((p) => p.x));
@@ -50,7 +50,7 @@ class World {
 
     // avoid generating trees inside or nearby building & roads
     const illegalPolygons = [
-      ...this.buildings,
+      ...this.buildings.map((b) => b.base),
       ...this.envelopes.map((e) => e.polygon),
     ];
 
@@ -175,7 +175,7 @@ class World {
       }
     }
 
-    return bases;
+    return bases.map((b) => new Building(b));
   }
 
   draw(ctx, viewPoint) {
@@ -189,11 +189,17 @@ class World {
     for (const segment of this.roadBorders) {
       segment.draw(ctx, { color: 'white', width: 4 });
     }
-    for (const tree of this.trees) {
-      tree.draw(ctx, viewPoint);
-    }
-    for (const building of this.buildings) {
-      building.draw(ctx);
+
+    // sort trees & building according to distance from viewPoint
+    // closer one drawn first - we will use their base to do sorting
+    const items = [...this.buildings, ...this.trees];
+    items.sort(
+      (item1, item2) =>
+        item2.base.distanceToPoint(viewPoint) -
+        item1.base.distanceToPoint(viewPoint)
+    );
+    for (const item of items) {
+      item.draw(ctx, viewPoint);
     }
   }
 }
