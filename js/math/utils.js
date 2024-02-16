@@ -64,6 +64,10 @@ function lerp(a, b, t) {
   return a + (b - a) * t;
 }
 
+function lerp2D(A, B, t) {
+  return new Point(lerp(A.x, B.x, t), lerp(A.y, B.y, t));
+}
+
 // Arguments are vectors
 function getIntersection(A, B, C, D) {
   const tNumerator = (D.x - C.x) * (A.y - C.y) - (A.x - C.x) * (D.y - C.y);
