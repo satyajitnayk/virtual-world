@@ -56,6 +56,10 @@ function angle(p) {
   return Math.atan2(p.y, p.x);
 }
 
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
 // Arguments are vectors
 function getIntersection(A, B, C, D) {
   const tNumerator = (D.x - C.x) * (A.y - C.y) - (A.x - C.x) * (D.y - C.y);
