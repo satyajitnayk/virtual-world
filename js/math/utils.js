@@ -96,3 +96,10 @@ function getRandomColor() {
   const hue = 290 + Math.random() * 260;
   return `hsl(${hue},100%,60%)`;
 }
+
+function getFake3DPoint(point, viewPoint, height) {
+  const direction = normalize(subtract(point, viewPoint));
+  const dist = distance(point, viewPoint);
+  const scaler = Math.atan(dist / 300) / (Math.PI / 2);
+  return add(point, scale(direction, height * scaler));
+}

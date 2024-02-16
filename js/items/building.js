@@ -1,13 +1,13 @@
 class Building {
   // polygon for base
-  constructor(polygon, heightCoef = 0.4) {
+  constructor(polygon, height = 200) {
     this.base = polygon;
-    this.heightCoef = heightCoef;
+    this.height = height;
   }
 
   draw(ctx, viewPoint) {
     const topPoints = this.base.points.map((p) =>
-      add(p, scale(subtract(p, viewPoint), this.heightCoef))
+      getFake3DPoint(p, viewPoint, this.height * 0.6)
     );
     const ceiling = new Polygon(topPoints);
 
@@ -31,10 +31,47 @@ class Building {
         polygon1.distanceToPoint(viewPoint)
     );
 
+    const baseMidpoints = [
+      average(this.base.points[0], this.base.points[1]),
+      average(this.base.points[2], this.base.points[3]),
+    ];
+
+    const topMidPoints = baseMidpoints.map((p) =>
+      getFake3DPoint(p, viewPoint, this.height)
+    );
+
+    const roofPolygons = [
+      new Polygon([
+        ceiling.points[0],
+        ceiling.points[3],
+        topMidPoints[1],
+        topMidPoints[0],
+      ]),
+      new Polygon([
+        ceiling.points[2],
+        ceiling.points[1],
+        topMidPoints[0],
+        topMidPoints[1],
+      ]),
+    ];
+
+    roofPolygons.sort(
+      (poly1, poly2) =>
+        poly2.distanceToPoint(viewPoint) - poly1.distanceToPoint(viewPoint)
+    );
+
     this.base.draw(ctx, { fill: 'white', stroke: '#AAA' });
     for (const side of sides) {
       side.draw(ctx, { fill: 'white', stroke: '#AAA' });
     }
     ceiling.draw(ctx, { fill: 'white', stroke: '#AAA' });
+    for (const polygon of roofPolygons) {
+      polygon.draw(ctx, {
+        fill: '#D44',
+        stroke: '#C44',
+        lineWidth: 8,
+        join: 'round',
+      });
+    }
   }
 }
