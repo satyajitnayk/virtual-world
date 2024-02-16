@@ -36,6 +36,15 @@ function scale(p, scaler) {
   return new Point(p.x * scaler, p.y * scaler);
 }
 
+function normalize(p) {
+  return scale(p, 1 / magnitude(p));
+}
+
+function magnitude(p) {
+  // distance of point from origin: sqrt(x^2+y^2)
+  return Math.hypot(p.x, p.y);
+}
+
 function translate(loc, angle, offset) {
   return new Point(
     loc.x + Math.cos(angle) * offset,
@@ -51,9 +60,10 @@ function angle(p) {
 function getIntersection(A, B, C, D) {
   const tNumerator = (D.x - C.x) * (A.y - C.y) - (A.x - C.x) * (D.y - C.y);
   const uNumerator = (C.y - A.y) * (A.x - B.x) - (C.x - A.x) * (A.y - B.y);
-
   const denominator = (B.x - A.x) * (D.y - C.y) - (D.x - C.x) * (B.y - A.y);
-  if (denominator != 0) {
+
+  const eps = 0.001;
+  if (Math.abs(denominator) > eps) {
     const t = tNumerator / denominator;
     const u = uNumerator / denominator;
 
