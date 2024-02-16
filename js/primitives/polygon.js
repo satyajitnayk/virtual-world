@@ -93,6 +93,14 @@ class Polygon {
     }
   }
 
+  distanceToPoint(point) {
+    return Math.min(...this.segments.map((s) => s.distanceToPoint(point)));
+  }
+
+  distanceToPolygon(polygon) {
+    return Math.min(this.points.map((p) => polygon.distanceToPoint(p)));
+  }
+
   intersectsPolygon(polygon) {
     for (let s1 of this.segments) {
       for (let s2 of polygon.segments) {

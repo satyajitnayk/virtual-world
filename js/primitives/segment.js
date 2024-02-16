@@ -20,6 +20,30 @@ class Segment {
     return this.p1.equals(point) || this.p2.equals(point);
   }
 
+  distanceToPoint(point) {
+    const projection = this.projectPoint(point);
+    // projection is b/w line
+    if (projection.offset > 0 && projection.offset < 1) {
+      return distance(point, projection.point);
+    } else {
+      const distToP1 = distance(point, this.p1);
+      const distToP2 = distance(point, this.p2);
+      return Math.min(distToP1, distToP2);
+    }
+  }
+
+  projectPoint(point) {
+    const a = subtract(point, this.p1);
+    const b = subtract(this.p2, this.p1);
+    const normB = normalize(b);
+    const scaler = dot(a, normB);
+
+    return {
+      point: add(this.p1, scale(normB, scaler)),
+      offset: scaler / magnitude(b),
+    };
+  }
+
   draw(ctx, { width = 2, color = 'black', dash = [] } = {}) {
     ctx.beginPath();
     ctx.lineWidth = width;

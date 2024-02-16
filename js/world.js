@@ -5,7 +5,8 @@ class World {
     roadRoundness = 10,
     buildingWidth = 150,
     buildingMinLength = 150,
-    spacing = 50
+    spacing = 50,
+    treeSize = 160
   ) {
     this.graph = graph;
     this.roadWidth = roadWidth;
@@ -13,6 +14,7 @@ class World {
     this.buildingWidth = buildingWidth;
     this.buildingMinLength = buildingMinLength;
     this.spacing = spacing;
+    this.treeSize = treeSize;
 
     this.envelopes = [];
     this.roadBorders = [];
@@ -35,7 +37,7 @@ class World {
     this.trees = this.#generateTrees();
   }
 
-  #generateTrees(count = 10) {
+  #generateTrees() {
     const points = [
       ...this.roadBorders.map((s) => [s.p1, s.p2]).flat(),
       ...this.buildings.map((b) => b.points).flat(),
@@ -46,14 +48,60 @@ class World {
     const top = Math.min(...points.map((p) => p.y));
     const bottom = Math.max(...points.map((p) => p.y));
 
+    // avoid generating trees inside or nearby building & roads
+    const illegalPolygons = [
+      ...this.buildings,
+      ...this.envelopes.map((e) => e.polygon),
+    ];
+
     console.log;
     const trees = [];
-    while (count--) {
+    let tryCount = 0;
+    while (tryCount < 100) {
       const p = new Point(
         lerp(left, right, Math.random()),
         lerp(bottom, top, Math.random())
       );
-      trees.push(p);
+
+      let keep = true;
+      // a remove tree if intersect with road or building
+      for (const polygon of illegalPolygons) {
+        if (
+          polygon.containsPoint(p) ||
+          polygon.distanceToPoint(p) < this.treeSize / 2
+        ) {
+          keep = false;
+          break;
+        }
+      }
+
+      // avoid intersecting trees
+      if (keep) {
+        for (const tree of trees) {
+          if (distance(tree, p) < this.treeSize) {
+            keep = false;
+            break;
+          }
+        }
+      }
+
+      // do not generate far away from road - at most 2 tree if far away
+      if (keep) {
+        let closeToSomething = false;
+        for (const polygon of illegalPolygons) {
+          if (polygon.distanceToPoint(p) < this.treeSize * 2) {
+            closeToSomething = true;
+            break;
+          }
+        }
+        keep = closeToSomething;
+      }
+
+      if (keep) {
+        tryCount = 0;
+        trees.push(p);
+      }
+      tryCount++;
     }
     return trees;
   }
@@ -116,7 +164,10 @@ class World {
     // remove one if any buildings intersecting
     for (let i = 0; i < bases.length - 1; ++i) {
       for (let j = i + 1; j < bases.length; ++j) {
-        if (bases[i].intersectsPolygon(bases[j])) {
+        if (
+          bases[i].intersectsPolygon(bases[j]) ||
+          bases[i].distanceToPolygon(bases[j]) < this.spacing
+        ) {
           bases.splice(j, 1);
           j--;
         }
@@ -138,7 +189,7 @@ class World {
       segment.draw(ctx, { color: 'white', width: 4 });
     }
     for (const tree of this.trees) {
-      tree.draw(ctx);
+      tree.draw(ctx, { size: this.treeSize, color: 'rgba(0,0,0,0.5' });
     }
     for (const building of this.buildings) {
       building.draw(ctx);
