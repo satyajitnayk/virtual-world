@@ -2,12 +2,21 @@ class Envelope {
   // Initialize the Envelope object with a skeleton
   // (a set of points defining the envelope's shape)
   constructor(skeleton, width, roundness = 1) {
-    this.skeleton = skeleton;
-    this.polygon = this.#generatePolygon(width, roundness);
+    if (skeleton) {
+      this.skeleton = skeleton;
+      this.polygon = this.#generatePolygon(width, roundness);
+    }
+  }
+
+  static load(info) {
+    const envelope = new Envelope()
+    envelope.skeleton = new Segment(info.skeleton.p1, info.skeleton.p2)
+    envelope.polygon = Polygon.load(info.polygon)
+    return envelope
   }
 
   #generatePolygon(width, roundness) {
-    const { p1, p2 } = this.skeleton;
+    const {p1, p2} = this.skeleton;
     const radius = width / 2;
     // angle between vector p1 and p2
     const alpha = angle(subtract(p1, p2));

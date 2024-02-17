@@ -1,8 +1,12 @@
 class Building {
-  // polygon for base
+  // polygon for base of building
   constructor(polygon, height = 200) {
     this.base = polygon;
     this.height = height;
+  }
+
+  static load(info) {
+    return new Building(Polygon.load(info.base), info.height)
   }
 
   draw(ctx, viewPoint) {
@@ -66,9 +70,9 @@ class Building {
       lineWidth: 20,
     });
     for (const side of sides) {
-      side.draw(ctx, { fill: 'white', stroke: '#AAA' });
+      side.draw(ctx, {fill: 'white', stroke: '#AAA'});
     }
-    ceiling.draw(ctx, { fill: 'white', stroke: 'white', lineWidth: 6 });
+    ceiling.draw(ctx, {fill: 'white', stroke: 'white', lineWidth: 6});
     for (const polygon of roofPolygons) {
       polygon.draw(ctx, {
         fill: '#D44',

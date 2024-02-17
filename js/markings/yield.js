@@ -3,6 +3,8 @@ class Yield extends Marking {
     super(center, directionVector, width, height);
 
     this.border = this.polygon.segments[2];
+
+    this.type = 'yield'
   }
 
   draw(ctx) {

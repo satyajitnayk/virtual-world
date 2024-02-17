@@ -1,9 +1,11 @@
 class Stop extends Marking {
   constructor(center, directionVector, width, height) {
     super(center, directionVector, width, height)
-    
+
     // border for STOP sign
     this.border = this.polygon.segments[2];
+
+    this.type = 'stop'
   }
 
   draw(ctx) {

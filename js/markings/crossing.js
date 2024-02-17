@@ -1,10 +1,10 @@
 class Crossing extends Marking {
   constructor(center, directionVector, width, height) {
     super(center, directionVector, width, height)
-    
+
     // borders for CROSS sign
     this.borders = [this.polygon.segments[0], this.polygon.segments[2]];
-
+    this.type = 'crossing'
   }
 
   draw(ctx) {

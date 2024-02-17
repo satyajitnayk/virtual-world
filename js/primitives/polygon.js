@@ -7,6 +7,10 @@ class Polygon {
     }
   }
 
+  static load(info) {
+    return new Polygon(info.points.map(p => new Point(p.x, p.y)))
+  }
+
   /**
    * - Computes the union of multiple polygons represented by their segments.
    * - The union consists of segments that are not contained within any other polygon.

@@ -29,6 +29,26 @@ class World {
     this.generate();
   }
 
+  static load(info) {
+    const world = new World(new Graph())
+    world.graph = Graph.load(info.graph)
+
+    world.roadWidth = info.roadWidth;
+    world.roadRoundness = info.roadRoundness;
+    world.buildingWidth = info.buildingWidth;
+    world.buildingMinLength = info.buildingMinLength;
+    world.spacing = info.spacing;
+    world.treeSize = info.treeSize;
+
+    world.envelopes = info.envelopes.map(e => Envelope.load(e))
+    world.roadBorders = info.roadBorders.map(b => new Segment(b.p1, b.p2))
+    world.buildings = info.buildings.map(b => Building.load(b))
+    world.trees = info.trees.map(t => new Tree(t.center, info.treeSize))
+    world.laneGuides = info.laneGuides.map(g => new Segment(g.p1, g.p2))
+    world.markings = info.markings.map(m => Marking.load(m))
+    return world
+  }
+
   generate() {
     this.envelopes.length = 0;
     for (const segment of this.graph.segments) {
@@ -270,7 +290,7 @@ class World {
     for (const segment of this.graph.segments) {
       segment.draw(ctx, {color: 'white', width: 4, dash: [10, 10]});
     }
-    
+
     for (const segment of this.roadBorders) {
       segment.draw(ctx, {color: 'white', width: 4});
     }
