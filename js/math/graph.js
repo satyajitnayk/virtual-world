@@ -29,12 +29,12 @@ class Graph {
     this.segments.push(segment);
   }
 
-  conatinsPoint(point) {
+  containsPoint(point) {
     return this.points.find((p) => p.equals(point));
   }
 
   tryAddPoint(point) {
-    if (!this.conatinsPoint(point)) {
+    if (!this.containsPoint(point)) {
       this.addPoint(point);
       return true;
     }

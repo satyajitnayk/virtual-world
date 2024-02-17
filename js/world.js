@@ -20,6 +20,9 @@ class World {
     this.roadBorders = [];
     this.buildings = [];
     this.trees = [];
+    this.laneGuides = []
+
+    this.markings = [];
 
     this.generate();
   }
@@ -35,6 +38,22 @@ class World {
     this.roadBorders = Polygon.union(this.envelopes.map((e) => e.polygon));
     this.buildings = this.#generateBuildings();
     this.trees = this.#generateTrees();
+    this.laneGuides.length = 0;
+    this.laneGuides.push(...this.#generateLaneGuides())
+  }
+
+  #generateLaneGuides() {
+    const tmpEnvelopes = [];
+    for (const segment of this.graph.segments) {
+      tmpEnvelopes.push(
+        new Envelope(
+          segment,
+          this.roadWidth / 2,
+          this.roadRoundness
+        )
+      );
+    }
+    return Polygon.union(tmpEnvelopes.map(e => e.polygon))
   }
 
   #generateTrees() {
@@ -180,14 +199,18 @@ class World {
 
   draw(ctx, viewPoint) {
     for (const envelope of this.envelopes) {
-      envelope.draw(ctx, { fill: '#BBB', stroke: '#BBB', lineWidth: 15 });
+      envelope.draw(ctx, {fill: '#BBB', stroke: '#BBB', lineWidth: 15});
+    }
+
+    for (const marking of this.markings) {
+      marking.draw(ctx)
     }
 
     for (const segment of this.graph.segments) {
-      segment.draw(ctx, { color: 'white', width: 4, dash: [10, 10] });
+      segment.draw(ctx, {color: 'white', width: 4, dash: [10, 10]});
     }
     for (const segment of this.roadBorders) {
-      segment.draw(ctx, { color: 'white', width: 4 });
+      segment.draw(ctx, {color: 'white', width: 4});
     }
 
     // sort trees & building according to distance from viewPoint

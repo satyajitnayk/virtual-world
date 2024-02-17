@@ -11,21 +11,42 @@ class GraphEditor {
     this.hovered = null;
     this.dragging = false;
     this.mousePoint = null;
+  }
 
+  enable() {
     this.#addEventListeners();
   }
 
+  disable() {
+    this.#removeEventListeners();
+    this.selected = null;
+    this.hovered = null;
+  }
+
   #addEventListeners() {
-    // handle mouse click event
+    // storing the listener so that when we remove them we remove the same one we created
     // bind the 'handleMouseDown' method to the current context ('this').
     // This allows 'handleMouseDown' to access properties and methods of the current object.
-    this.canvas.addEventListener('mousedown', this.#handleMouseDown.bind(this));
+    this.boundMouseDown = this.#handleMouseDown.bind(this);
+    this.boundMouseMove = this.#handleMouseMove.bind(this);
+    this.boundMouseUp = () => (this.dragging = false);
+    this.boundContextMenu = (evt) => evt.preventDefault();
+
+    // handle mouse click event
+    this.canvas.addEventListener('mousedown', this.boundMouseDown);
     // handle mouse movements
-    this.canvas.addEventListener('mousemove', this.#handleMouseMove.bind(this));
-    // to prevent diaplying menu on clicking right btn in mouse
-    this.canvas.addEventListener('contextmenu', (evt) => evt.preventDefault());
+    this.canvas.addEventListener('mousemove', this.boundMouseMove);
     // handle releasing mouse button
-    this.canvas.addEventListener('mouseup', () => (this.dragging = false));
+    this.canvas.addEventListener('mouseup', this.boundMouseUp);
+    // to prevent diaplying menu on clicking right btn in mouse
+    this.canvas.addEventListener('contextmenu', this.boundContextMenu);
+  }
+
+  #removeEventListeners() {
+    this.canvas.removeEventListener('mousedown', this.boundMouseDown);
+    this.canvas.removeEventListener('mousemove', this.boundMouseMove);
+    this.canvas.removeEventListener('mouseup', this.boundMouseUp);
+    this.canvas.removeEventListener('contextmenu', this.boundContextMenu);
   }
 
   #handleMouseDown(evt) {

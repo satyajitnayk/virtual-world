@@ -2,73 +2,112 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>World Editor</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>World Editor</title>
+    <link href="styles.css" rel="stylesheet">
 </head>
 
 <body>
-  <h1>World Editor</h1>
-  <canvas id="myCanvas"></canvas>
-  <div id="controls">
-    <button onclick="dispose()"> 🗑️ </button>
-    <button onclick="save()"> 💾 </button>
-  </div>
+<h1>World Editor</h1>
+<canvas id="myCanvas"></canvas>
+<div id="controls">
+    <button onclick="dispose()"> 🗑️</button>
+    <button onclick="save()"> 💾</button>
+    &nbsp;
+    <button id="graphBtn" onclick="setMode('graph')">🌍</button>
+    <button id="stopBtn" onclick="setMode('stop')">🛑</button>
+</div>
 
-  <script src="js/world.js"></script>
-  <script src="js/graphEditor.js"></script>
-  <script src="js/viewport.js"></script>
-  <script src="js/items/tree.js"></script>
-  <script src="js/items/building.js"></script>
-  <script src="js/math/utils.js"></script>
-  <script src="js/math/graph.js"></script>
-  <script src="js/primitives/point.js"></script>
-  <script src="js/primitives/segment.js"></script>
-  <script src="js/primitives/polygon.js"></script>
-  <script src="js/primitives/envelope.js"></script>
-  <script>
+<script src="js/world.js"></script>
+<script src="js/viewport.js"></script>
+<script src="js/markings/stop.js"></script>
+<script src="js/editors/graphEditor.js"></script>
+<script src="js/editors/stopEditor.js"></script>
+<script src="js/items/tree.js"></script>
+<script src="js/items/building.js"></script>
+<script src="js/math/utils.js"></script>
+<script src="js/math/graph.js"></script>
+<script src="js/primitives/point.js"></script>
+<script src="js/primitives/segment.js"></script>
+<script src="js/primitives/polygon.js"></script>
+<script src="js/primitives/envelope.js"></script>
+<script>
 
 
-    myCanvas.width = 600;
-    myCanvas.height = 600;
+  myCanvas.width = 600;
+  myCanvas.height = 600;
 
-    const ctx = myCanvas.getContext('2d');
+  const ctx = myCanvas.getContext('2d');
 
-    const graphString = localStorage.getItem("graph");
-    const graphInfo = graphString ? JSON.parse(graphString) : null;
-    const graph = graphInfo ? Graph.load(graphInfo) : new Graph();
-    const world = new World(graph);
-    const viewport = new Viewport(myCanvas)
-    const graphEditor = new GraphEditor(viewport, graph);
+  const graphString = localStorage.getItem("graph");
+  const graphInfo = graphString ? JSON.parse(graphString) : null;
+  const graph = graphInfo ? Graph.load(graphInfo) : new Graph();
+  const world = new World(graph);
+  const viewport = new Viewport(myCanvas)
+  const graphEditor = new GraphEditor(viewport, graph);
+  const stopEditor = new StopEditor(viewport, world);
 
-    // reanimate only if graph changes
-    let oldGraphHash = graph.hash();
-    animate();
+  // reanimate only if graph changes
+  let oldGraphHash = graph.hash();
+  // default mode is graph editor
+  setMode('graph')
 
-    function animate() {
-      viewport.reset()
-      if (graph.hash() != oldGraphHash) {
-        world.generate();
-        oldGraphHash = graph.hash()
-      }
-      const viewPoint = scale(viewport.getOffset(), -1)
-      world.draw(ctx, viewPoint);
-      ctx.globalAlpha = 0.3;
-      graphEditor.display();
-      // Browser will call animate 60 time/second
-      requestAnimationFrame(animate);
+  animate();
+
+  function animate() {
+    viewport.reset()
+    if (graph.hash() !== oldGraphHash) {
+      world.generate();
+      oldGraphHash = graph.hash()
+    }
+    const viewPoint = scale(viewport.getOffset(), -1)
+    world.draw(ctx, viewPoint);
+    ctx.globalAlpha = 0.3;
+    graphEditor.display();
+    stopEditor.display()
+    // Browser will call animate 60 time/second
+    requestAnimationFrame(animate);
+  }
+
+  function dispose() {
+    graphEditor.dispose();
+    world.markings.length = 0
+  }
+
+  function save() {
+    localStorage.setItem('graph', JSON.stringify(graph));
+  }
+
+  function setMode(mode) {
+    disableEditors();
+
+    switch (mode) {
+      case 'graph':
+        graphBtn.style.backgroundColor = 'white'
+        graphBtn.style.filter = ''
+        graphEditor.enable();
+        break;
+      case 'stop':
+        stopBtn.style.backgroundColor = 'white'
+        stopBtn.style.filter = ''
+        stopEditor.enable();
+        break;
     }
 
-    function dispose() {
-      graphEditor.dispose();
-    }
+  }
 
-    function save() {
-      localStorage.setItem('graph', JSON.stringify(graph));
-    }
+  function disableEditors() {
+    graphBtn.style.backgroundColor = 'gray'
+    graphBtn.style.filter = 'grayscale(100%)'
+    graphEditor.disable();
 
-  </script>
+    stopBtn.style.backgroundColor = 'gray'
+    stopBtn.style.filter = 'grayscale(100%)'
+    stopEditor.disable();
+  }
+
+</script>
 </body>
 
 </html>
