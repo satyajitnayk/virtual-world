@@ -67,6 +67,11 @@ function magnitude(p) {
   return Math.hypot(p.x, p.y);
 }
 
+function perpendicular(p) {
+  // flip point on y-axis or we can call over x-axis
+  return new Point(-p.y, p.x)
+}
+
 function translate(loc, angle, offset) {
   return new Point(
     loc.x + Math.cos(angle) * offset,
