@@ -51,7 +51,7 @@ class GraphEditor {
 
   #handleMouseDown(evt) {
     // right click
-    if (evt.button == 2) {
+    if (evt.button === 2) {
       if (this.selected) {
         this.selected = null;
       } else if (this.hovered) {
@@ -60,15 +60,15 @@ class GraphEditor {
       }
     }
     // left click
-    if (evt.button == 0) {
+    if (evt.button === 0) {
       if (this.hovered) {
-        // hovered to exisitng point
+        // hovered to existing point
         this.#selectPoint(this.hovered);
         this.dragging = true;
         return;
       }
       this.graph.addPoint(this.mousePoint);
-      // check if any point already slelected,
+      // check if any point already selected,
       // then draw line b/w it & current point
       this.#selectPoint(this.mousePoint);
       this.hovered = this.mousePoint;
@@ -79,7 +79,7 @@ class GraphEditor {
     // get mouse pointer location
     this.mousePoint = this.viewport.getMousePoint(evt, true);
     // check if nearest point exists near mousePoint
-    // add onlyselect it but do not add new point near it
+    // add only select it but do not add new point near it
     this.hovered = getNearestPoint(
       this.mousePoint,
       this.graph.points,
@@ -102,8 +102,8 @@ class GraphEditor {
     this.graph.removePoint(point);
     this.hovered = null;
     // check if selected & removed point are same
-    // else keep slected point as it is
-    if (this.selected == point) {
+    // else keep selected point as it is
+    if (this.selected === point) {
       this.selected = null;
     }
   }
@@ -118,14 +118,14 @@ class GraphEditor {
   display() {
     this.graph.draw(this.ctx);
     if (this.hovered) {
-      this.hovered.draw(this.ctx, { fill: true });
+      this.hovered.draw(this.ctx, {fill: true});
     }
     if (this.selected) {
       // snap line to hovered point
       const intent = this.hovered ? this.hovered : this.mousePoint;
       // draw for context aware - what will happen next
-      new Segment(this.selected, intent).draw(this.ctx, { dash: [3, 3] }); // 3px line, 3px space
-      this.selected.draw(this.ctx, { outline: true });
+      new Segment(this.selected, intent).draw(this.ctx, {dash: [3, 3]}); // 3px line, 3px space
+      this.selected.draw(this.ctx, {outline: true});
     }
   }
 }

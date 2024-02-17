@@ -17,16 +17,33 @@
     &nbsp;
     <button id="graphBtn" onclick="setMode('graph')">🌍</button>
     <button id="stopBtn" onclick="setMode('stop')">🛑</button>
+    <button id="yieldBtn" onclick="setMode('yield')">⚠️</button>
     <button id="crossingBtn" onclick="setMode('crossing')">🚶</button>
+    <button id="parkingBtn" onclick="setMode('parking')">🅿️</button>
+    <button id="lightBtn" onclick="setMode('light')">🚦</button>
+    <button id="startBtn" onclick="setMode('start')">🚙</button>
+    <button id="targetBtn" onclick="setMode('target')">🎯</button>
 </div>
 
 <script src="js/world.js"></script>
 <script src="js/viewport.js"></script>
+<script src="js/markings/marking.js"></script>
 <script src="js/markings/stop.js"></script>
+<script src="js/markings/start.js"></script>
 <script src="js/markings/crossing.js"></script>
+<script src="js/markings/parking.js"></script>
+<script src="js/markings/light.js"></script>
+<script src="js/markings/target.js"></script>
+<script src="js/markings/yield.js"></script>
+<script src="js/editors/markingEditor.js"></script>
 <script src="js/editors/graphEditor.js"></script>
 <script src="js/editors/stopEditor.js"></script>
 <script src="js/editors/crossingEditor.js"></script>
+<script src="js/editors/startEditor.js"></script>
+<script src="js/editors/parkingEditor.js"></script>
+<script src="js/editors/lightEditor.js"></script>
+<script src="js/editors/targetEditor.js"></script>
+<script src="js/editors/yieldEditor.js"></script>
 <script src="js/items/tree.js"></script>
 <script src="js/items/building.js"></script>
 <script src="js/math/utils.js"></script>
@@ -48,9 +65,17 @@
   const graph = graphInfo ? Graph.load(graphInfo) : new Graph();
   const world = new World(graph);
   const viewport = new Viewport(myCanvas)
-  const graphEditor = new GraphEditor(viewport, graph);
-  const stopEditor = new StopEditor(viewport, world);
-  const crossingEditor = new CrossingEditor(viewport, world);
+
+  const tools = {
+    graph: {button: graphBtn, editor: new GraphEditor(viewport, graph)},
+    stop: {button: stopBtn, editor: new StopEditor(viewport, world)},
+    crossing: {button: crossingBtn, editor: new CrossingEditor(viewport, world)},
+    start: {button: startBtn, editor: new StartEditor(viewport, world)},
+    parking: {button: parkingBtn, editor: new ParkingEditor(viewport, world)},
+    light: {button: lightBtn, editor: new LightEditor(viewport, world)},
+    target: {button: targetBtn, editor: new TargetEditor(viewport, world)},
+    yield: {button: yieldBtn, editor: new YieldEditor(viewport, world)},
+  }
 
   // reanimate only if graph changes
   let oldGraphHash = graph.hash();
@@ -68,15 +93,15 @@
     const viewPoint = scale(viewport.getOffset(), -1)
     world.draw(ctx, viewPoint);
     ctx.globalAlpha = 0.3;
-    graphEditor.display();
-    stopEditor.display()
-    crossingEditor.display()
+    for (const tool of Object.values(tools)) {
+      tool.editor.display()
+    }
     // Browser will call animate 60 time/second
     requestAnimationFrame(animate);
   }
 
   function dispose() {
-    graphEditor.dispose();
+    tools.graph.editor.dispose();
     world.markings.length = 0
   }
 
@@ -86,39 +111,17 @@
 
   function setMode(mode) {
     disableEditors();
-
-    switch (mode) {
-      case 'graph':
-        graphBtn.style.backgroundColor = 'white'
-        graphBtn.style.filter = ''
-        graphEditor.enable();
-        break;
-      case 'stop':
-        stopBtn.style.backgroundColor = 'white'
-        stopBtn.style.filter = ''
-        stopEditor.enable();
-        break;
-      case 'crossing':
-        crossingBtn.style.backgroundColor = 'white'
-        crossingBtn.style.filter = ''
-        crossingEditor.enable();
-        break;
-    }
-
+    tools[mode].button.style.backgroundColor = 'white'
+    tools[mode].button.style.filter = ''
+    tools[mode].editor.enable();
   }
 
   function disableEditors() {
-    graphBtn.style.backgroundColor = 'gray'
-    graphBtn.style.filter = 'grayscale(100%)'
-    graphEditor.disable();
-
-    stopBtn.style.backgroundColor = 'gray'
-    stopBtn.style.filter = 'grayscale(100%)'
-    stopEditor.disable();
-
-    crossingBtn.style.backgroundColor = 'gray'
-    crossingBtn.style.filter = 'grayscale(100%)'
-    crossingEditor.disable();
+    for (const tool of Object.values(tools)) {
+      tool.button.style.backgroundColor = 'gray'
+      tool.button.style.filter = 'grayscale(100%)'
+      tool.editor.disable();
+    }
   }
 
 </script>

@@ -23,9 +23,9 @@ class Polygon {
       // Iterate through each segment of the current polygon
       for (const segment of polygons[i].segments) {
         let keep = true;
-        // remove segment if it is inside an envelope other then it'w own envelope
+        // remove segment if it is inside an envelope other than its own envelope
         for (let j = 0; j < polygons.length; ++j) {
-          if (i != j) {
+          if (i !== j) {
             if (polygons[j].containsSegment(segment)) {
               keep = false;
               break;
@@ -72,8 +72,8 @@ class Polygon {
         // Check if there is an intersection that is not at the tips
         if (
           intersection &&
-          intersection.offset != 1 &&
-          intersection.offset != 0
+          intersection.offset !== 1 &&
+          intersection.offset !== 0
         ) {
           // Create a new point at the intersection
           const point = new Point(intersection.x, intersection.y);
@@ -120,11 +120,11 @@ class Polygon {
 
   containsPoint(point) {
     // get an outer point - far point like (-1000,-1000)
-    const outerpoint = new Point(-1000, -1000);
+    const outerPoint = new Point(-1000, -1000);
     let intersectionCount = 0;
     for (const segment of this.segments) {
       const intersection = getIntersection(
-        outerpoint,
+        outerPoint,
         point,
         segment.p1,
         segment.p2
@@ -135,12 +135,12 @@ class Polygon {
     }
     // if a point intersected even no of time it is outside else inside
     // refer to intersection.png
-    return intersectionCount % 2 == 1;
+    return intersectionCount % 2 === 1;
   }
 
   drawSegments(ctx) {
-    for (let segement of this.segments) {
-      segement.draw(ctx, { color: getRandomColor(), width: 5 });
+    for (let segment of this.segments) {
+      segment.draw(ctx, {color: getRandomColor(), width: 5});
     }
   }
 
